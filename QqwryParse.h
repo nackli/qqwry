@@ -12,7 +12,10 @@ public:
 	bool getLocateAddr(const char* szIpAddr, char* szAddr, char* szTelecom);
 	bool getLocateAddr(const uint32_t uIpAddr, char* szAddr, char* szTelecom);
 private:
+#ifdef _WIN32
 	HANDLE m_hMapFile;
+#else
+#endif
 	char* m_pMemData;
 };
 

@@ -18,7 +18,7 @@
 #define REDIRECT_TYPE_ONE			0x01
 #define REDIRECT_TYPE_TWO			0x02
 #define FLAG_SEVEN					0x07
-
+#ifdef _WIN32
 HANDLE OnOpenFile(const char *szFileName, uint32_t dwDesiredAccess,
 	uint32_t dwCreationDisposition, uint32_t dwFlagsAndAttributes)
 {
@@ -26,7 +26,7 @@ HANDLE OnOpenFile(const char *szFileName, uint32_t dwDesiredAccess,
 	return CreateFileA(szFileName, dwDesiredAccess, 0, NULL,
 		dwCreationDisposition, dwFlagsAndAttributes, NULL);
 }
-
+#endif
 static uint32_t OnIp2Uint32(const char* ip) {
 	uint32_t ip_long = 0;
 	uint8_t ip_len = (uint8_t)strlen(ip);
@@ -89,7 +89,6 @@ static uint32_t OnFindIpIndex(const uint32_t uIpAddr,const char *pMemCtx)
 	}
 	if (uIndexIp > uIpAddr)
 		pMemData = pMemCtx + iStartIndex;
-	uint32_t ta = (uint32_t)LE_24(pMemData + 4);
 	return (uint32_t)LE_24(pMemData + 4);
 }
 
@@ -134,7 +133,7 @@ bool QqwryParse::loadQqwryData(const char* szFilePath) {
 
 	if (!szFilePath || !szFilePath[0])
 		return false;
-
+#ifdef _WIN32
 	HANDLE hWriteFile = OnOpenFile(szFilePath, GENERIC_READ, OPEN_ALWAYS, 0);
 	if (hWriteFile == INVALID_HANDLE_VALUE)
 		return false;
@@ -155,9 +154,11 @@ bool QqwryParse::loadQqwryData(const char* szFilePath) {
 	// Ó³ÉäÄÚ´æ
 	m_pMemData = (char*)MapViewOfFile(m_hMapFile, FILE_MAP_READ, 0, 0,
 		dwFileSize);
-
+#else
+#endif
 	if (!m_pMemData)
 		return false;
+
 	return true;
 }
 
