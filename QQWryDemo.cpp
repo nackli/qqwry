@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <locale.h>
 #include <iostream>
+#ifndef _WIN32
 #include <iconv.h>
 #include <cstring>
 #include <assert.h>
 #include <unistd.h>
+#endif
 // 示例用法
 
 
@@ -21,6 +23,8 @@ int main(){
     qwry.getLocateAddr("222.83.21.122", szLoca, szTelecom);
   //  mbstowcs()
     std::cout << szLoca << " --" << szTelecom<< std::endl;
+#ifndef _WIN32
     pause();
+#endif
     return 0;
 }

@@ -144,7 +144,7 @@ static bool OnGetTelecomName(char* szTeleName, const char* pData,const uint32_t 
 
 QqwryParse::QqwryParse():m_pMemData(nullptr){
 #ifdef _WIN32
-	m_hMapFile(nullptr)
+	m_hMapFile = nullptr;
 #else
 	m_iMapFile = 0;
 #endif
@@ -246,7 +246,7 @@ void QqwryParse::closeMemHandle()
 #ifdef _WIN32	
 	if(m_pMemData)
 	{
-		UnMapViewOfFile(m_pMemData);
+		UnmapViewOfFile(m_pMemData);
 		m_pMemData = nullptr;
 	}
 	if(m_hMapFile)

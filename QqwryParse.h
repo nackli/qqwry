@@ -1,7 +1,7 @@
 #pragma once
 #ifdef _WIN32
 #include <Windows.h>
-#lese
+#else
 #include <sys/mman.h>
 #endif
 #include <stdint.h>
