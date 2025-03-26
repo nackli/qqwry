@@ -1,5 +1,13 @@
 #include "QqwryParse.h"
 #include <iostream>
+#ifndef _WIN32
+#include<sys/mman.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/stat.h>
+#endif
 /*********************************************************************************************/
 #define BE_32(x) ((((uint8_t*)(x))[0]<<24) |\
                   (((uint8_t*)(x))[1]<<16) |\
@@ -25,6 +33,17 @@ HANDLE OnOpenFile(const char *szFileName, uint32_t dwDesiredAccess,
 	//wstring wstrWriteFile(strFileName.begin(), strFileName.end());
 	return CreateFileA(szFileName, dwDesiredAccess, 0, NULL,
 		dwCreationDisposition, dwFlagsAndAttributes, NULL);
+}
+#else
+int OnOpenFile(const char *szFileName, uint32_t dwDesiredAccess,
+	uint32_t dwCreationDisposition)
+{
+    int fd = open(szFileName, dwDesiredAccess, dwCreationDisposition);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+	return fd;
 }
 #endif
 static uint32_t OnIp2Uint32(const char* ip) {
@@ -123,7 +142,12 @@ static bool OnGetTelecomName(char* szTeleName, const char* pData,const uint32_t 
 }
 /*********************************************************************************************/
 
-QqwryParse::QqwryParse():m_hMapFile(nullptr), m_pMemData(nullptr){
+QqwryParse::QqwryParse():m_pMemData(nullptr){
+#ifdef _WIN32
+	m_hMapFile(nullptr)
+#else
+	m_iMapFile = 0;
+#endif
 }
 
 QqwryParse::~QqwryParse() {
@@ -138,7 +162,7 @@ bool QqwryParse::loadQqwryData(const char* szFilePath) {
 	if (hWriteFile == INVALID_HANDLE_VALUE)
 		return false;
 
-	//IPÎÄ¼þÎ´³¬¹ý4G£¬ËùÒÔºöÂÔ¸ßÎ»
+	//IPï¿½Ä¼ï¿½Î´ï¿½ï¿½ï¿½ï¿½4Gï¿½ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½Ô¸ï¿½Î»
 	DWORD dwFileSize = GetFileSize(hWriteFile, nullptr);
 
 	m_hMapFile = CreateFileMappingA(hWriteFile, NULL, PAGE_READONLY, 0, dwFileSize,
@@ -151,10 +175,21 @@ bool QqwryParse::loadQqwryData(const char* szFilePath) {
 		std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
 		return false;
 	}
-	// Ó³ÉäÄÚ´æ
+	// Ó³ï¿½ï¿½ï¿½Ú´ï¿½
 	m_pMemData = (char*)MapViewOfFile(m_hMapFile, FILE_MAP_READ, 0, 0,
 		dwFileSize);
 #else
+	m_iMapFile = OnOpenFile(szFilePath, O_RDONLY, 7777);
+	struct stat fileStat;
+	fstat(m_iMapFile,&fileStat);
+    // å°†æ–‡ä»¶æ˜ å°„åˆ°å†…å­˜
+    m_pMemData = (char *)mmap(NULL, fileStat.st_size, PROT_READ, MAP_SHARED, m_iMapFile, 0);
+    if (m_pMemData == MAP_FAILED) {
+        perror("mmap");
+        close(m_iMapFile);
+        exit(EXIT_FAILURE);
+    }
+
 #endif
 	if (!m_pMemData)
 		return false;
@@ -173,7 +208,6 @@ bool QqwryParse::getLocateAddr(const uint32_t uIpAddr, char* szAddr, char* szTel
 {
 	if (!uIpAddr || !szAddr || !szTelecom)
 		return false;
-	char* pAddr = szAddr;
 	uint32_t uDataIndex = 0;
 	uint32_t uTelecomOffset = 0;
 	uint32_t uIndexIp = OnFindIpIndex(uIpAddr, m_pMemData);
@@ -205,4 +239,25 @@ bool QqwryParse::getLocateAddr(const uint32_t uIpAddr, char* szAddr, char* szTel
 			OnGetTelecomName(szTelecom, m_pMemData, (uint32_t)(pMemData - m_pMemData + 1));
 	}
 	return true;
+}
+
+void QqwryParse::closeMemHandle()
+{
+#ifdef _WIN32	
+	if(m_pMemData)
+	{
+		UnMapViewOfFile(m_pMemData);
+		m_pMemData = nullptr;
+	}
+	if(m_hMapFile)
+	{
+		CloseHandle(m_hMapFile);
+		m_hMapFile = nullptr;
+	}
+#else
+	struct stat fileStat;
+	fstat(m_iMapFile,&fileStat);
+	munmap(m_pMemData, fileStat.st_size); 
+	close(m_iMapFile);
+#endif	
 }
