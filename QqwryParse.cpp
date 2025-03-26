@@ -151,6 +151,7 @@ QqwryParse::QqwryParse():m_pMemData(nullptr){
 }
 
 QqwryParse::~QqwryParse() {
+	this->closeMemHandle();
 }
 
 bool QqwryParse::loadQqwryData(const char* szFilePath) {
