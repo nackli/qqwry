@@ -127,11 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="qqwry.c" />
     <ClCompile Include="QQWryDemo.cpp" />
+    <ClCompile Include="QqwryParse.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="qqwry.h" />
+    <ClInclude Include="QqwryParse.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
