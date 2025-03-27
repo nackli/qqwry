@@ -23,7 +23,9 @@ int main(){
     qwry.getLocateAddr("222.83.21.122", szLoca, szTelecom);
   //  mbstowcs()
     std::cout << szLoca << " --" << szTelecom<< std::endl;
-#ifndef _WIN32
+#ifdef _WIN32
+    system("pause");
+#else
     pause();
 #endif
     return 0;

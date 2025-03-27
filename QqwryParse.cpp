@@ -46,37 +46,53 @@ int OnOpenFile(const char *szFileName, uint32_t dwDesiredAccess,
 	return fd;
 }
 #endif
-static uint32_t OnIp2Uint32(const char* ip) {
-	uint32_t ip_long = 0;
-	uint8_t ip_len = (uint8_t)strlen(ip);
-	uint32_t ip_sec = 0;
-	int8_t ip_level = 3;
-	uint8_t i, n;
-	for (i = 0; i <= ip_len; i++) {
-		if (i != ip_len && ip[i] != '.' && ip[i] < 48 || ip[i]>57) {
-			continue;
+
+static bool OnParseIp(const char* strIpAddr, uint8_t parts[4])
+{
+	if (!strIpAddr)
+		return false;
+
+	char szIpTemp[256];
+	strcpy_s(szIpTemp, strIpAddr);
+	szIpTemp[strlen(strIpAddr)] = '\0';
+
+	uint8_t uPartCnt = 0;
+	char* token = strtok(szIpTemp, ".");
+	while (token != NULL) {
+		if (uPartCnt >= 4)
+			return false; // 超过四个部分
+
+		size_t len = strlen(token);
+		if (len == 0 || len > 3)
+			return false;
+
+		// 检查是否为纯数字
+		for (char* p = token; *p; p++) {
+			if (!isdigit((unsigned char)*p))
+				return false;
 		}
-		if (ip[i] == '.' || i == ip_len) {
-			/*too many .*/
-			if (ip_level == -1) {
-				return 0;
-			}
-			for (n = 0; n < ip_level; n++) {
-				ip_sec *= 256;
-			}
-			ip_long += ip_sec;
-			if (i == ip_len) {
-				break;
-			}
-			ip_level--;
-			ip_sec = 0;
-		}
-		else {
-			/*char '0' == int 48*/
-			ip_sec = ip_sec * 10 + (ip[i] - 48);
-		}
+
+		// 检查前导零
+		if (len > 1 && token[0] == '0')
+			return false;
+
+		int num = atoi(token);
+		if (num < 0 || num > 255)
+			return false;
+
+		parts[uPartCnt++] = num;
+		token = strtok(NULL, ".");
 	}
-	return ip_long;
+
+	if (uPartCnt != 4)
+		return false;
+	return true;
+}
+
+static uint32_t OnIp2Uint32(const char* ip) {
+	uint8_t szIpAddr[4];
+	OnParseIp(ip, szIpAddr);
+	return BE_32(szIpAddr);
 }
 
 static uint32_t OnFindIpIndex(const uint32_t uIpAddr,const char *pMemCtx)
@@ -139,6 +155,20 @@ static bool OnGetTelecomName(char* szTeleName, const char* pData,const uint32_t 
 			*szTeleName++ = *pTempData++;
 	}
 	return true;
+}
+
+/*-----------------------------------------
+局域网IP地址范围
+A类：10.0.0.0-10.255.255.255
+B类：172.16.0.0-172.31.255.255
+C类：192.168.0.0-192.168.255.255
+-------------------------------------------*/
+static int OnIsPrivateIpAddr(uint32_t uIpAddr) {
+	if((0x0A000000 <= uIpAddr && uIpAddr <= 0x0aFFFFFF) ||
+		(0xAC100000 <= uIpAddr && uIpAddr <= 0xAC1FFFFF) ||
+		(0xC0A80000 <= uIpAddr && uIpAddr <= 0xC0A8FFFF))
+		return true;
+	return false;
 }
 /*********************************************************************************************/
 
@@ -208,6 +238,8 @@ bool QqwryParse::getLocateAddr(const char* szIpAddr, char* szAddr, char* szTelec
 bool QqwryParse::getLocateAddr(const uint32_t uIpAddr, char* szAddr, char* szTelecom)
 {
 	if (!uIpAddr || !szAddr || !szTelecom)
+		return false;
+	if (OnIsPrivateIpAddr(uIpAddr))
 		return false;
 	uint32_t uDataIndex = 0;
 	uint32_t uTelecomOffset = 0;
