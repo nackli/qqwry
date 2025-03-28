@@ -1,3 +1,4 @@
+
 # This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: CMake on multiple platforms
@@ -52,7 +53,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" && touch ${{ build-output-dir }}/qqwry-demo.zip
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" && touch ${{ github.workspace }}/build/qqwry-demo.zip
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -76,8 +77,8 @@ jobs:
 
     - name: Generate SHA256 Hash
       run: |
-        cd build
-        sha256sum qqwry-demo.zip > qqwry-demo.zip.sha256
+        #cd build
+        sha256sum ${{ steps.strings.outputs.build-output-dir }}/qqwry-demo.zip > ${{ steps.strings.outputs.build-output-dir }}/qqwry-demo.zip.sha256
 
     - name: Get Build Time
       id: time
