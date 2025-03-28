@@ -52,7 +52,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" && touch build/qqwry-demo.zip
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" && touch ${{ steps.strings.outputs.build-output-dir }}/qqwry-demo.zip
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -96,7 +96,7 @@ jobs:
             **Build Time:** ${{ env.BUILD_TIME }}
             **Assets:**
             - [qqwry-demo.zip](https://github.com/${{ github.repository }}/releases/download/${{ github.ref }}/qqwry-demo.zip)
-            - SHA256: `$(cat build/qqwry-demo.zip.sha256)`
+            - SHA256: `$(cat ${{ steps.strings.outputs.build-output-dir }}/qqwry-demo.zip.sha256)`
       
     - name: Upload Assets
       uses: actions/upload-release-asset@v1
@@ -104,7 +104,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/qqwry-demo.zip
+        asset_path: ${{ steps.strings.outputs.build-output-dir }}/qqwry-demo.zip
         asset_name: qqwry-demo.zip
 
     - name: Upload Hash File
@@ -113,7 +113,7 @@ jobs:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
        upload_url: ${{ steps.create_release.outputs.upload_url }}
-       asset_path: ./build/qqwry-demo.zip.sha256
+       asset_path: ${{ steps.strings.outputs.build-output-dir }}/qqwry-demo.zip.sha256
        asset_name: qqwry-demo.zip.sha256
             
       
