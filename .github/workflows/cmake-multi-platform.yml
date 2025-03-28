@@ -52,7 +52,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT" && touch build/qqwry-demo.zip
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -73,3 +73,47 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Generate SHA256 Hash
+      run: |
+        cd build
+        sha256sum qqwry-demo.zip > qqwry-demo.zip.sha256
+
+    - name: Get Build Time
+      id: time
+      run: echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV    
+
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            **Build Time:** ${{ env.BUILD_TIME }}
+            **Assets:**
+            - [qqwry-demo.zip](https://github.com/${{ github.repository }}/releases/download/${{ github.ref }}/qqwry-demo.zip)
+            - SHA256: `$(cat build/qqwry-demo.zip.sha256)`
+      
+    - name: Upload Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/qqwry-demo.zip
+        asset_name: qqwry-demo.zip
+
+    - name: Upload Hash File
+      uses: actions/upload-release-asset@v1
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+       upload_url: ${{ steps.create_release.outputs.upload_url }}
+       asset_path: ./build/qqwry-demo.zip.sha256
+       asset_name: qqwry-demo.zip.sha256
+            
+      
