@@ -56,3 +56,6 @@ file(GLOB DEV_SOURCES_EXE ./*.cpp)
 
 add_executable(${PROJECT_NAME} ${DEV_SOURCES_EXE})
 set_target_properties(qqWryDemo PROPERTIES LINKER_LANGUAGE CXX)
+
+include(BuildPage)
+use_pack_fun(${PROJECT_NAME} "ZIP")
