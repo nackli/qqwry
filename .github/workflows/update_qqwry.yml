@@ -37,7 +37,7 @@ jobs:
       
       - name: Get download link from WeChat tweet
         run: |
-          link=$(python qqwry.py)
+          link=$(python update_qqwry.py)
           if [ -z "$link" ]; then
             echo "No link found, exiting"
             exit 0
