@@ -53,7 +53,11 @@ static bool OnParseIp(const char* strIpAddr, uint8_t parts[4])
 		return false;
 
 	char szIpTemp[256];
+#ifdef _WIN32
 	strcpy_s(szIpTemp, strIpAddr);
+#else
+	strcpy(szIpTemp, strIpAddr);
+#endif
 	szIpTemp[strlen(strIpAddr)] = '\0';
 
 	uint8_t uPartCnt = 0;
