@@ -85,16 +85,15 @@ jobs:
       run: echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV    
 
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release and Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            **Build Time:** ${{ env.BUILD_TIME }}
-            **Assets:**
-            - [qqWryDemo.zip](https://github.com/${{ github.repository }}/releases/download/${{ github.ref }}/qqWryDemo.zip)
-            - SHA256: `$(cat ${{ steps.strings.outputs.build-output-dir }}/qqWryDemo.zip.sha256)`     
+        tag_name: ${{ github.ref }}
+        name: Release ${{ github.ref }}
+        body: TODO New Release.
+        draft: false
+        prerelease: false
+        files: |
+          qqWryDemo.zip
+          LICENSE 
