@@ -102,6 +102,10 @@ jobs:
         NEW_PATCH=$((PATCH + 1))
         echo "new_tag=v$MAJOR.$MINOR.$NEW_PATCH" >> $GITHUB_OUTPUT
         
+    - name: Delete existing remote tag (if needed)
+      run: |
+        git push --delete origin ${{ steps.bump-version.outputs.new_tag }} || true  # 忽略删除失败
+        
     - name: Create and push new tag
       run: |
         git tag ${{ steps.bump-version.outputs.new_tag }}
