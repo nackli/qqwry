@@ -88,10 +88,9 @@ jobs:
       id: get-last-tag
       run: |
         # 获取最新标签（如 v1.0.0）
-        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        LATEST_TAG=$(git describe --tags --abbrev=0>/dev/null || echo "v0.0.0")
         echo "current_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-        echo "version:${{ outputs.current_tag }}" 
-
+        
     - name: Print version
       run: echo "version:${{ steps.get-last-tag.outputs.current_tag }}" 
       
