@@ -5,9 +5,9 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  #  branches: [ "main" ]
+  #pull_request:
+  #  branches: [ "main" ]
     tags:
       -'v' #触发条件是当有以V开条的标签被创建时
 
