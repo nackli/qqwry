@@ -85,7 +85,7 @@ jobs:
       run: echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV
       
     - name: Get latest tag
-      id: get-last_tag
+      id: get-last-tag
       run: |
         # 获取最新标签（如 v1.0.0）
         LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -95,7 +95,7 @@ jobs:
       id: bump-version
       run: |
         # 解析当前版本号并递增补丁版本（v1.0.0 → v1.0.1）
-        CURRENT_VERSION=$(echo "${{ steps.get-last_tag.outputs.current_tag }}" | cut -d'v' -f2)
+        CURRENT_VERSION=$(echo "${{ steps.get-last-tag.outputs.current_tag }}" | cut -d'v' -f2)
         MAJOR=$(echo $CURRENT_VERSION | cut -d'.' -f1)
         MINOR=$(echo $CURRENT_VERSION | cut -d'.' -f2)
         PATCH=$(echo $CURRENT_VERSION | cut -d'.' -f3)
