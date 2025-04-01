@@ -86,14 +86,8 @@ jobs:
 
 
     - name: Create Release and Upload Release Asset
-      uses: nackli/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
+      uses: nackli/upload-to-release@master
       with:
-        tag_name: ${{ github.ref }}
-        name: Release ${{ github.ref }}
-        body: TODO New Release.
-        draft: false
-        prerelease: false
-        files: |
-          qqWryDemo.zip
-          LICENSE 
+        args: qqWryDemo.zip application/zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
