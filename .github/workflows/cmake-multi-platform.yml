@@ -112,14 +112,14 @@ jobs:
     #     NEW_PATCH=$((PATCH + 1))
     #     echo "new_tag=v$MAJOR.$MINOR.$NEW_PATCH" >> $GITHUB_OUTPUT
         
-    - name: Delete existing remote tag (if needed)
-      run: |
-        git push --delete origin ${{ steps.get-last-tag.outputs.current_tag }} || true  # 忽略删除失败
+    # - name: Delete existing remote tag (if needed)
+    #   run: |
+    #     git push --delete origin ${{ steps.get-last-tag.outputs.current_tag }} || true  # 忽略删除失败
         
-    - name: Create and push new tag
-      run: |
-        git tag ${{ steps.get-last-tag.outputs.current_tag }}
-        git push origin ${{ steps.get-last-tag.outputs.current_tag }}
+    # - name: Create and push new tag
+    #   run: |
+    #     git tag ${{ steps.get-last-tag.outputs.current_tag }}
+    #     git push origin ${{ steps.get-last-tag.outputs.current_tag }}
           
     - name: Create Release
       id: create_release
