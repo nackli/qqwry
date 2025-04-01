@@ -123,10 +123,12 @@ jobs:
           
     - name: Create Release
       id: create_release
+      if: matrix.os == 'ubuntu-latest' 
       uses: actions/create-release@v1 # 使用 actions/create-release action 创建 release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub Token 来创建 release
       with:
+        
         tag_name: ${{ matrix.c_compiler }}-${{ steps.get-last-tag.outputs.current_tag }} # 使用当前推送的 tag 作为 release 的 tag 名
         release_name: ${{ matrix.os }}
         draft: false # 是否为草稿版发布，false 表示发布后可以直接查看，true 表示需要手动发布
