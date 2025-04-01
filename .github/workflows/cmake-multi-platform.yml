@@ -114,12 +114,12 @@ jobs:
         
     - name: Delete existing remote tag (if needed)
       run: |
-        git push --delete origin ${{ steps.bump-version.outputs.new_tag }} || true  # 忽略删除失败
+        git push --delete origin ${{ steps.get-last-tag.outputs.current_tag }} || true  # 忽略删除失败
         
     - name: Create and push new tag
       run: |
-        git tag ${{ steps.bump-version.outputs.new_tag }}
-        git push origin ${{ steps.bump-version.outputs.new_tag }}
+        git tag ${{ steps.get-last-tag.outputs.current_tag }}
+        git push origin ${{ steps.get-last-tag.outputs.current_tag }}
           
     - name: Create Release
       id: create_release
@@ -127,8 +127,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub Token 来创建 release
       with:
-        tag_name: ${{ steps.bump-version.outputs.new_tag }} # 使用当前推送的 tag 作为 release 的 tag 名
-        release_name: Release ${{ steps.bump-version.outputs.new_tag }}
+        tag_name: ${{ steps.get-last-tag.outputs.current_tag }} # 使用当前推送的 tag 作为 release 的 tag 名
+        release_name: Release ${{ steps.get-last-tag.outputs.current_tag }}
         draft: false # 是否为草稿版发布，false 表示发布后可以直接查看，true 表示需要手动发布
         prerelease: false # 是否为预发布版，false 表示正式版，true 表示预发布版
         # 指定要上传的文件路径（相对于仓库根目录）
