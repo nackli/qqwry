@@ -92,7 +92,7 @@ jobs:
       run: |
         # 获取最新标签（如 v1.0.0）
         git fetch --all --tags
-        LATEST_TAG=$(git describe --tags --abbrev=0>/dev/null || echo "1.0.0")
+        LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1)>/dev/null || echo "1.0.0")
         echo "current_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
         
     - name: Print version
