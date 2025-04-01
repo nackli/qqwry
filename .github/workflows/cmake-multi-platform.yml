@@ -132,7 +132,7 @@ jobs:
       with:
         
         tag_name: ${{ matrix.c_compiler }}-${{ steps.get-last-tag.outputs.current_tag }} # 使用当前推送的 tag 作为 release 的 tag 名
-        release_name: ${{ matrix.os }}
+        release_name: ${{ matrix.build_type }}
         draft: false # 是否为草稿版发布，false 表示发布后可以直接查看，true 表示需要手动发布
         prerelease: false # 是否为预发布版，false 表示正式版，true 表示预发布版
 
