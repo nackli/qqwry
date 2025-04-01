@@ -4,7 +4,7 @@
 根据官方公告，纯真网络将于 2024 年 10 月正式停止维护 qqwry.dat 格式数据库。本仓库将持续维护历史版本数据，并提供技术解析方案供开发者参考使用。最新数据请通过纯真网络官方渠道获取。
 
 # 【数据文件说明】
-[qqwry.dat](https://raw.githubusercontent.com/nackli/qqwry/main/qqwry.dat)
+[qqwry.dat](https://raw.githubusercontent.com/nackli/qqwry/main/qqwry.dat) 
 │实时更新直链（覆盖更新机制）
 │数据来源：纯真网络官方每日构建（非安装包格式）
 ├[Releases](https://github.com/nackli/qqwry/releases)
