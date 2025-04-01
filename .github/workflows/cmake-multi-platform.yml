@@ -82,8 +82,25 @@ jobs:
 
     - name: Get Build Time
       id: time
-      run: echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV    
-
+      run: echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV
+      
+    - name: Get latest tag
+      id: get-last_tag
+      run: |
+        # 获取最新标签（如 v1.0.0）
+        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        echo "current_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+  
+    - name: Increment version
+      id: bump-version
+      run: |
+        # 解析当前版本号并递增补丁版本（v1.0.0 → v1.0.1）
+        CURRENT_VERSION=$(echo "${{ steps.get-last_tag.outputs.current_tag }}" | cut -d'v' -f2)
+        MAJOR=$(echo $CURRENT_VERSION | cut -d'.' -f1)
+        MINOR=$(echo $CURRENT_VERSION | cut -d'.' -f2)
+        PATCH=$(echo $CURRENT_VERSION | cut -d'.' -f3)
+        NEW_PATCH=$((PATCH + 1))
+        echo "new_tag=v$MAJOR.$MINOR.$NEW_PATCH" >> $GITHUB_OUTPUT
 
     - name: Create Release
       id: create_release
@@ -91,8 +108,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub Token 来创建 release
       with:
-        tag_name: ${{ github.ref_name  }} # 使用当前推送的 tag 作为 release 的 tag 名
-        release_name: Release ${{ github.ref_name  }} # release 的名称，可以自定义格式
+        tag_name: ${{ steps.bump-version.outputs.new_tag }} # 使用当前推送的 tag 作为 release 的 tag 名
+        release_name: Release ${{ steps.bump-version.outputs.new_tag }}# release 的名称，可以自定义格式
         draft: false # 是否为草稿版发布，false 表示发布后可以直接查看，true 表示需要手动发布
         prerelease: false # 是否为预发布版，false 表示正式版，true 表示预发布版
         # 指定要上传的文件路径（相对于仓库根目录）
