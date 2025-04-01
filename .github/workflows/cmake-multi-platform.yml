@@ -88,7 +88,7 @@ jobs:
       id: get-last-tag
       run: |
         # 获取最新标签（如 v1.0.0）
-        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        LATEST_TAG=$(git describe --tags --abbrev=0 > /dev/null || echo "v0.0.0")
         echo "current_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
   
     - name: Increment version
@@ -102,9 +102,9 @@ jobs:
         NEW_PATCH=$((PATCH + 1))
         echo "new_tag=v$MAJOR.$MINOR.$NEW_PATCH" >> $GITHUB_OUTPUT
         
-    - name: Delete existing remote tag (if needed)
-      run: |
-        git push --delete origin ${{ steps.bump-version.outputs.new_tag }} || true  # 忽略删除失败
+    #- name: Delete existing remote tag (if needed)
+    #  run: |
+    #    git push --delete origin ${{ steps.bump-version.outputs.new_tag }} || true  # 忽略删除失败
         
     - name: Create and push new tag
       run: |
