@@ -85,9 +85,21 @@ jobs:
       run: echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV    
 
 
-    - name: Create Release and Upload Release Asset
-      uses: actions/checkout@v4
-      with:
-        args: ${{ steps.strings.outputs.build-output-dir }}/qqWryDemo.zip application/zip
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1 # 使用 actions/create-release action 创建 release
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub Token 来创建 release
+      with:
+        tag_name: ${{ github.ref }} # 使用当前推送的 tag 作为 release 的 tag 名
+        release_name: Release ${{ github.ref }} # release 的名称，可以自定义格式
+        draft: false # 是否为草稿版发布，false 表示发布后可以直接查看，true 表示需要手动发布
+        prerelease: false # 是否为预发布版，false 表示正式版，true 表示预发布版
+    
+    - name: Upload Release Asset (Linux/macOS)
+      if: matrix.os != 'windows-latest' # 只在 Linux 和 macOS 上上传资产
+      uses: actions/upload-release-asset@v1 # 使用 actions/upload-release-asset action 上传资产
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub Token 来上传资产
+      with:
+        upload_url: ${{ steps.create_release.outputs}}.
