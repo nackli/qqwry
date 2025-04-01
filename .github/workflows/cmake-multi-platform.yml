@@ -88,6 +88,7 @@ jobs:
       id: get-last-tag
       run: |
         # 获取最新标签（如 v1.0.0）
+        git fetch --all --tags
         LATEST_TAG=$(git describe --tags --abbrev=0>/dev/null || echo "1.0.0")
         echo "current_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
         
