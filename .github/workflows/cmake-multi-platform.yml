@@ -123,4 +123,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub Token 来上传资产
       with:
+        asset_path: ${{ steps.strings.outputs.build-output-dir }}/qqWryDemo.zip  # ✅ 明确路径
+        asset_name: qqWryDemo.zip       # 自定义上传后的文件名（可选）
+        asset_content_type: application/zip
         upload_url: ${{ steps.create_release.outputs}}.
