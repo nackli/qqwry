@@ -95,6 +95,10 @@ jobs:
         release_name: Release ${{ github.ref_name  }} # release 的名称，可以自定义格式
         draft: false # 是否为草稿版发布，false 表示发布后可以直接查看，true 表示需要手动发布
         prerelease: false # 是否为预发布版，false 表示正式版，true 表示预发布版
+        # 指定要上传的文件路径（相对于仓库根目录）
+        asset_path: ${{ steps.strings.outputs.build-output-dir }}/qqWryDemo.zip  # ✅ 明确路径
+        asset_name: qqWryDemo.zip       # 自定义上传后的文件名（可选）
+        asset_content_type: application/zip
     
     - name: Upload Release Asset (Linux/macOS)
       if: matrix.os != 'windows-latest' # 只在 Linux 和 macOS 上上传资产
