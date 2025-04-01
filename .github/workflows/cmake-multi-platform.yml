@@ -92,14 +92,12 @@ jobs:
       
     - name: Get latest tag
       id: get-last-tag
-      if: matrix.os == 'ubuntu-latest' 
       run: |
         # 获取最新标签（如 v1.0.0）
         LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
         echo "current_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
         
     - name: Print version
-      if: matrix.os == 'ubuntu-latest'  
       run: |
         echo "version:${{ steps.get-last-tag.outputs.current_tag }}" 
       
