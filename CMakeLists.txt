@@ -1,6 +1,12 @@
 
-#Written by Nack li <nackli@163.com>
-#Copyright (c) 2024. All Rights Reserved.
+
+# @author nackli <nackli@163.com>
+# @version 1.0
+# @copyright 2025 Your Company Name. All rights reserved.
+# @License: MIT (https://opensource.org/licenses/MIT)
+# @Created: 2025-03-20
+#
+
 
 #version
 cmake_minimum_required(VERSION 3.16)
