@@ -1,3 +1,10 @@
+/**
+ * @author nackli <nackli@163.com>
+ * @version 1.0
+ * @copyright 2025 Your Company Name. All rights reserved.
+ * @license MIT
+ */
+
 #include "QqwryParse.h"
 #include <iostream>
 #ifndef _WIN32
